@@ -88,9 +88,21 @@ export default function ChatPage() {
     }
   };
 
+  const clearHistory = () => {
+    setMessages([]);
+  };
+
   return (
-    <div className="flex flex-col h-screen p-6">
-      <h2 className="text-2xl font-bold mb-6">Chat Interface</h2>
+    <div className="flex flex-col h-screen bg-gray-100">
+      <div className="flex justify-between items-center p-4 bg-white shadow">
+        <h1 className="text-xl font-bold">AI Chat</h1>
+        <button 
+          onClick={clearHistory}
+          className="px-4 py-2 text-sm text-red-600 hover:text-red-700 hover:bg-red-50 rounded-md transition-colors"
+        >
+          Clear Chat
+        </button>
+      </div>
       
       <Card className="flex-1 p-4 mb-4">
         <ScrollArea className="h-[calc(100vh-220px)]">
