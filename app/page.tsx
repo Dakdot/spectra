@@ -130,7 +130,7 @@ export default function ChatPage() {
         </ScrollArea>
       </Card>
 
-      <div className="flex space-x-2">
+      <div className="flex space-x-2 p-2">
         <Input
           value={input}
           onChange={(e) => setInput(e.target.value)}
