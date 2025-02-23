@@ -4,6 +4,7 @@ import { MessageSquare, Calendar } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import Image from 'next/image';
 
 const sidebarItems = [
   { name: 'Chat', href: '/', icon: MessageSquare },
@@ -16,7 +17,8 @@ export function Sidebar() {
   return (
     <div className="w-64 bg-card border-r">
       <div className="p-6">
-        <h1 className="text-2xl font-bold text-primary">Dashboard</h1>
+        <Image src="/images/spectra-icon.png" alt="Spectra Logo" width={100} height={100} />
+        <h1 className="text-2xl font-bold text-primary">Spectra</h1>
       </div>
       <nav className="space-y-2 px-4">
         {sidebarItems.map((item) => {

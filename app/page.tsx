@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -13,20 +13,69 @@ interface Message {
 }
 
 export default function ChatPage() {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<Message[]>(() => {
+    // Initialize messages from localStorage if available
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('chatHistory');
+      return saved ? JSON.parse(saved) : [];
+    }
+    return [];
+  });
   const [input, setInput] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSend = () => {
-    if (!input.trim()) return;
+  // Add effect to save messages to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem('chatHistory', JSON.stringify(messages));
+  }, [messages]);
 
-    const newMessages: Message[] = [
+  const handleSend = async () => {
+    if (!input.trim() || isLoading) return;
+
+    var newMessages: Message[] = [
       ...messages,
       { role: 'user', content: input },
-      { role: 'assistant', content: 'This is a mock response. AI integration pending.' }
     ];
-    
+
     setMessages(newMessages);
     setInput('');
+    setIsLoading(true);
+
+    try {
+      const apiKey = process.env.NEXT_PUBLIC_FUNGI_API_KEY;
+      if (!apiKey) {
+        throw new Error('FUNGI_API_KEY environment variable is not set');
+      }
+
+      const response = await fetch("https://fungitest.fungiproject.xyz/test/graphs/run", {
+        method: "POST",
+        headers: {
+            "Authorization": `ApiKey ${apiKey}`,
+            "Content-Type": "application/json",
+    
+        },
+        body: JSON.stringify({
+            id: "67ba0bca3627d11124d7b441",
+            deploymentId: "67bb5f94bf5cf37db51211ae",
+            prompt: input,
+            chatHistory: []
+        })
+    });
+    
+    const data = await response.json();
+
+    var newMessages: Message[] = [
+      ...messages,
+      { role: 'user', content: input },
+      { role: 'assistant', content: data.result.node_outputs["0zekzWe6WKb8iMdl7ZfA"] },
+    ];
+      
+    setMessages(newMessages);
+    } catch (error) {
+      console.error('Error:', error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -64,9 +113,14 @@ export default function ChatPage() {
           onChange={(e) => setInput(e.target.value)}
           placeholder="Type your message..."
           onKeyPress={(e) => e.key === 'Enter' && handleSend()}
+          disabled={isLoading}
         />
-        <Button onClick={handleSend}>
-          <Send className="h-4 w-4" />
+        <Button onClick={handleSend} disabled={isLoading}>
+          {isLoading ? (
+            <span className="animate-spin">⏳</span>
+          ) : (
+            <Send className="h-4 w-4" />
+          )}
         </Button>
       </div>
     </div>

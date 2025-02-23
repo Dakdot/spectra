@@ -164,6 +164,27 @@ export default function ViewPage() {
               className="rounded-md border"
             />
           </Card>
+          <Card className="p-4">
+            <h3 className="text-xl font-semibold mb-4">Shifts for {date?.toLocaleDateString()}</h3>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Start Time</TableHead>
+                  <TableHead>End Time</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {shifts
+                  .filter((shift) => shift.day === date?.toLocaleDateString('en-US', { weekday: 'long' }))
+                  .map((shift) => (
+                    <TableRow key={shift.id}>
+                      <TableCell>{shift.startTime}</TableCell>
+                      <TableCell>{shift.endTime}</TableCell>
+                    </TableRow>
+                  ))}
+              </TableBody>
+            </Table>
+          </Card>
         </div>
       </div>
     </div>
