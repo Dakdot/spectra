@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -23,6 +23,16 @@ export default function ChatPage() {
   });
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
   // Add effect to save messages to localStorage whenever they change
   useEffect(() => {
@@ -95,7 +105,7 @@ export default function ChatPage() {
                 <div
                   className={`max-w-[80%] rounded-lg p-3 ${
                     message.role === 'user'
-                      ? 'bg-primary text-primary-foreground'
+                      ? 'bg-gradient-to-r from-blue-500 to-blue-400 text-primary-foreground'
                       : 'bg-muted'
                   }`}
                 >
@@ -104,6 +114,7 @@ export default function ChatPage() {
               </div>
             ))}
           </div>
+          <div ref={messagesEndRef} />
         </ScrollArea>
       </Card>
 
